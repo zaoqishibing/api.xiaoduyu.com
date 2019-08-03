@@ -1,5 +1,6 @@
 import Posts from './posts';
 import Topic from './topic';
+import Goals from './goals';
 import User from './user';
 import Comment from './comment';
 import UserNotification from './user-notification';
@@ -23,6 +24,7 @@ const typeDefs = [ `
 
   ${Posts.Schema}
   ${Topic.Schema}
+  ${Goals.Schema}
   ${User.Schema}
   ${Comment.Schema}
   ${UserNotification.Schema}
@@ -46,6 +48,7 @@ const typeDefs = [ `
   type Query {
     ${Posts.Query}
     ${Topic.Query}
+    ${Goals.Query}
     ${User.Query}
     ${Comment.Query}
     ${UserNotification.Query}
@@ -70,6 +73,7 @@ const typeDefs = [ `
   type Mutation {
     ${Posts.Mutation}
     ${Topic.Mutation}
+    ${Goals.Mutation}
     ${User.Mutation}
     ${Comment.Mutation}
     ${UserNotification.Mutation}

@@ -1,5 +1,6 @@
 import posts from './posts';
 import topic from './topic';
+import goals from './goals';
 import user from './user';
 import comment from './comment';
 import userNotification from './user-notification';
@@ -24,6 +25,7 @@ let Mutation = {};
 
 Object.assign(Query, posts.query);
 Object.assign(Query, topic.query);
+Object.assign(Query, goals.query);
 Object.assign(Query, user.query);
 Object.assign(Query, comment.query);
 Object.assign(Query, userNotification.query);
@@ -41,6 +43,7 @@ Object.assign(Query, Token.query);
 
 Object.assign(Mutation, posts.mutation);
 Object.assign(Mutation, topic.mutation);
+Object.assign(Mutation, goals.mutation);
 Object.assign(Mutation, user.mutation);
 Object.assign(Mutation, comment.mutation);
 Object.assign(Mutation, userNotification.mutation);
@@ -67,6 +70,7 @@ var resolvers = {
 
 Object.assign(resolvers, posts.resolvers);
 Object.assign(resolvers, topic.resolvers);
+Object.assign(resolvers, goals.resolvers);
 Object.assign(resolvers, user.resolvers);
 Object.assign(resolvers, comment.resolvers);
 Object.assign(resolvers, userNotification.resolvers);

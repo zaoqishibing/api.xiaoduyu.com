@@ -60,8 +60,8 @@ const query = {
       type: 'String', desc:'结束日期'
     }),
     method: data => ({
-      name: '', value: '',
-      type: 'String', desc:'模式(user_follow)'
+      name: 'type', value: data,
+      type: 'String', desc:'模式(0-打卡；1-分享)'
     })
   },
   // 排序，page size，page number
@@ -109,7 +109,7 @@ const save = {
     name: 'device_id', value: data, type: 'Int', desc:'设备'
   }),
   type: data => ({
-    name: 'type', value: data, type: 'Int', desc:'类型'
+    name: 'type', value: data, type: 'Int!', desc:'类型'
   })
 }
 

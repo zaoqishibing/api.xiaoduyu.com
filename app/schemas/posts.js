@@ -8,7 +8,9 @@ const PostsSchema = new Schema({
   user_id: { type: ObjectId, ref: 'User' },
   // 标签
   topic_id: { type: ObjectId, ref: 'Topic' },
-  // 类型，0提问，1分享
+  // 目标
+  goals_id: {type: ObjectId,ref: 'Goals'},
+  // 类型，0打卡，1分享
   type: { type: Number, default: 0 },
   // 标题
   title: { type: String, default: '' },
