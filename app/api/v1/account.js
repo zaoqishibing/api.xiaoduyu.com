@@ -324,41 +324,41 @@ exports.signup = function(req, res, next) {
 
     },
     */
-// 我的删改
-    // function(checkResult, callback) {
 
-    //   let query = {}
+    function(checkResult, callback) {
 
-    //   if (user.phone) query.phone = user.phone
-    //   if (user.email) query.email = user.email
+      let query = {}
 
-    //   Captcha.findOne({
-    //     query,
-    //     options: { sort:{ create_at: -1 } },
-    //     callback: function(err, captcha){
-    //       if (err) console.log(err)
-    //       if (captcha && captcha.captcha == user.captcha) {
-    //         callback(null, checkResult)
-    //       } else {
-    //         checkResult.captcha = 13010;
-    //         callback(checkResult);
-    //       }
-    //     }
-    //   })
+      if (user.phone) query.phone = user.phone
+      if (user.email) query.email = user.email
 
-    //   /*
-    //   Captcha.fetchByEmail(user.email, function(err, captcha){
-    //     if (err) console.log(err)
-    //     if (captcha && captcha.captcha == user.captcha) {
-    //       callback(null, checkResult)
-    //     } else {
-    //       checkResult.captcha = 13010;
-    //       callback(checkResult);
-    //     }
-    //   })
-    //   */
+      Captcha.findOne({
+        query,
+        options: { sort:{ create_at: -1 } },
+        callback: function(err, captcha){
+          if (err) console.log(err)
+          if (captcha && captcha.captcha == user.captcha) {
+            callback(null, checkResult)
+          } else {
+            checkResult.captcha = 13010;
+            callback(checkResult);
+          }
+        }
+      })
 
-    // },
+      /*
+      Captcha.fetchByEmail(user.email, function(err, captcha){
+        if (err) console.log(err)
+        if (captcha && captcha.captcha == user.captcha) {
+          callback(null, checkResult)
+        } else {
+          checkResult.captcha = 13010;
+          callback(checkResult);
+        }
+      })
+      */
+
+    },
 
     function(checkResult, callback) {
 

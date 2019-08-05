@@ -11,7 +11,10 @@ import { getQuerySchema, getUpdateSchema, getSaveSchema } from '../config';
 
 exports.Schema = `
 
-
+type user {
+  _id: String
+  nickname: String
+}
 # 目标
 type Goals {
   _id: String
@@ -19,13 +22,13 @@ type Goals {
   picture_of_punch: Int
   current_days_count: Int
   days_of_number: Int
+money:Int
+
   sort: Int
-  user_id：Int
-  money：Int
   create_at: String
   language: Int
   recommend: Boolean
-  user_id: String
+  user_id: user
 }
 
 

@@ -14,6 +14,7 @@ import Follow from './follow'
 import Phone from './phone'
 import Report from './report'
 import Block from './block'
+import Feed from './feed'
 import Goals from './goals'
 
 export {
@@ -32,5 +33,6 @@ export {
   Phone,
   Report,
   Block,
+  Feed,
   Goals
 }

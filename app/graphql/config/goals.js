@@ -31,7 +31,7 @@ const query = {
       let s = (data + '').split(' ');
 
       return {
-        name: 'title',
+        name: 'name',
         value: { $regex: RegExp("(" + s.join('|') + ")", "i") },
         type: 'String', desc: '目标名称'
       }
@@ -97,7 +97,7 @@ const save = {
     name: 'time_number', value: data, type: 'String!', desc:'时长或者数量'
   }),
   days_of_perweek: data => ({
-    name: 'days_of_perweek', value: data, type: '[Int]!', desc:'每周打卡天数设置'
+    name: 'days_of_perweek', value: data, type: 'String', desc:'每周打卡天数设置'
   }),
   topic_id: data => ({
     name: 'topic_id', value: data, type: 'ID', desc:'话题'

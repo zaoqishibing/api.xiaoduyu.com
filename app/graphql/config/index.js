@@ -14,6 +14,7 @@ import phone from './phone';
 import forgot from './forgot';
 import report from './report';
 import block from './block';
+import feed from './feed';
 import goals from './goals';
 
 let list = {
@@ -32,6 +33,7 @@ let list = {
   forgot,
   report,
   block,
+  feed,
   goals
 }
 

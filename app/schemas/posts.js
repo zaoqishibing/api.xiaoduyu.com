@@ -10,7 +10,7 @@ const PostsSchema = new Schema({
   topic_id: { type: ObjectId, ref: 'Topic' },
   // 目标
   goals_id: {type: ObjectId,ref: 'Goals'},
-  // 类型，0打卡，1分享
+  // 类型，0提问，1分享
   type: { type: Number, default: 0 },
   // 标题
   title: { type: String, default: '' },

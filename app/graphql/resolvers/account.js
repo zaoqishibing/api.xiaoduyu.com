@@ -216,17 +216,6 @@ mutation.addEmail = async (root, args, context, schema) => {
 
 }
 
-// mutation.signUp = () => ({ success: true })
-// mutation.sendCaptchaToEmail = () => ({ success: true })
-// mutation.bindingEmail = (root, args, context, schema) => {
-//   return {
-//     success: true
-//   }
-// }
-// mutation.resetPasswordByCaptcha = () => ({ success: true })
-// mutation.resetEmail = () => ({ success: true })
-// mutation.checkEmailAndSendCaptcha = () => ({ success: true })
-
 exports.query = query
 exports.mutation = mutation
 exports.resolvers = resolvers

@@ -1,7 +1,7 @@
 import posts from './posts';
 import topic from './topic';
-import goals from './goals';
 import user from './user';
+import goals from './goals';
 import comment from './comment';
 import userNotification from './user-notification';
 import notification from './notification';
@@ -19,14 +19,15 @@ import oauth from './oauth';
 import report from './report';
 import unlockToken from './unlock-token';
 import Token from './token';
+import Feed from './feed';
 
 let Query = {};
 let Mutation = {};
 
 Object.assign(Query, posts.query);
 Object.assign(Query, topic.query);
-Object.assign(Query, goals.query);
 Object.assign(Query, user.query);
+Object.assign(Query, goals.query);
 Object.assign(Query, comment.query);
 Object.assign(Query, userNotification.query);
 Object.assign(Query, notification.query);
@@ -40,11 +41,12 @@ Object.assign(Query, oauth.query);
 Object.assign(Query, report.query);
 Object.assign(Query, unlockToken.query);
 Object.assign(Query, Token.query);
+Object.assign(Query, Feed.query);
 
 Object.assign(Mutation, posts.mutation);
 Object.assign(Mutation, topic.mutation);
-Object.assign(Mutation, goals.mutation);
 Object.assign(Mutation, user.mutation);
+Object.assign(Mutation, goals.mutation);
 Object.assign(Mutation, comment.mutation);
 Object.assign(Mutation, userNotification.mutation);
 Object.assign(Mutation, notification.mutation);
@@ -62,6 +64,7 @@ Object.assign(Mutation, oauth.mutation);
 Object.assign(Mutation, report.mutation);
 Object.assign(Mutation, unlockToken.mutation);
 Object.assign(Mutation, Token.mutation);
+Object.assign(Mutation, Feed.mutation);
 
 var resolvers = {
   Query,
@@ -70,8 +73,8 @@ var resolvers = {
 
 Object.assign(resolvers, posts.resolvers);
 Object.assign(resolvers, topic.resolvers);
-Object.assign(resolvers, goals.resolvers);
 Object.assign(resolvers, user.resolvers);
+Object.assign(resolvers, goals.resolvers);
 Object.assign(resolvers, comment.resolvers);
 Object.assign(resolvers, userNotification.resolvers);
 Object.assign(resolvers, notification.resolvers);
@@ -89,5 +92,6 @@ Object.assign(resolvers, oauth.resolvers);
 Object.assign(resolvers, report.resolvers);
 Object.assign(resolvers, unlockToken.resolvers);
 Object.assign(resolvers, Token.resolvers);
+Object.assign(resolvers, Feed.resolvers);
 
 export default resolvers

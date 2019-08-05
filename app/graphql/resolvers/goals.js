@@ -10,7 +10,7 @@ import CreateError from './errors'
 
 import { getQuery, getOption, getUpdateQuery, getUpdateContent, getSaveFields } from '../config';
 import goals from '../../modelsa/goals';
-let [query, mutation, resolvers] = [{}, {}, {}];
+let [ query, mutation, resolvers ] = [{},{},{}];
 
 /*
 const s = async () => {
@@ -23,17 +23,18 @@ s();
 */
 
 query.goalses = async (root, args, context, schema) => {
+//console.log("context",context);
 
   const { user, role } = context
   const { method } = args
   let select = {}, err, res, query = {}, options = {}, goalsList;
   // let { query, options } = Querys({ args, model: 'topic', role });
 
-  [err, query] = getQuery({ args, model: 'goals', role });
-  [err, options] = getOption({ args, model: 'goals', role });
+  [ err, query ] = getQuery({ args, model:'goals', role });
+  [ err, options ] = getOption({ args, model:'goals', role });
 
   // select
-  schema.fieldNodes[0].selectionSet.selections.map(item => select[item.name.value] = 1);
+  schema.fieldNodes[0].selectionSet.selections.map(item=>select[item.name.value] = 1);
 
   // === 设置一些默认值
 
@@ -42,8 +43,15 @@ query.goalses = async (root, args, context, schema) => {
       sort: -1
     }
   }
-
-  [err, goalsList] = await To(Goals.find({ query, select, options }));
+if (Reflect.has(select, 'user_id')) {
+    if (!options.populate) options.populate = [];
+    options.populate.push({
+      path: 'user_id',
+      model: 'User',
+      select: { '_id': 1, 'nickname': 1 }
+    });
+  }
+  [ err, goalsList ] = await To(Goals.find({ query, select, options }));
 
   if (err) {
     throw CreateError({
@@ -77,12 +85,12 @@ query.countGoalses = async (root, args, context, schema) => {
   let err, select = {}, query, options, count;
   // let { query, options } = Querys({ args, model: 'topic', role })
 
-  [err, query] = getQuery({ args, model: 'goals', role });
-  [err, options] = getOption({ args, model: 'goals', role });
+  [ err, query ] = getQuery({ args, model:'goals', role });
+  [ err, options ] = getOption({ args, model:'goals', role });
 
   //===
 
-  [err, count] = await To(Goals.count({ query }))
+  [ err, count ] = await To(Goals.count({ query }))
 
   if (err) {
     throw CreateError({
@@ -96,31 +104,17 @@ query.countGoalses = async (root, args, context, schema) => {
 
 mutation.addGoals = async (root, args, context, schema) => {
 
-  const { user, role, ip } = context;
 
-  if (!ip) throw CreateError({ message: '无效的ip' });
+  const { user, role } = context;
   let err, result, save;
-  [err, save] = getSaveFields({ args, model: 'goals', role });
+  [ err, save ] = getSaveFields({ args, model: 'goals', role });
 
-  if (err) throw CreateError({ message: err });
 
-  if (!user) {
-    throw CreateError({
+ if (!user) {
+   throw CreateError({
       message: '游客无权限，请登录后再试',
-      data: {}
-    });
-  }
-
-
-  // 判断是否禁言
-  if (user && user.banned_to_post &&
-    new Date(user.banned_to_post).getTime() > new Date().getTime()
-  ) {
-    let countdown = Countdown(new Date(), user.banned_to_post);
-    throw CreateError({
-      message: '您被禁言，{days}天{hours}小时{mintues}分钟后解除禁言',
-      data: { error_data: countdown }
-    });
+     data: {}
+   });
   }
 
   if (!save.name || !save.time_number || !save.money) {
@@ -141,16 +135,14 @@ mutation.addGoals = async (root, args, context, schema) => {
     });
   };
 
+  [ err, result ] = await To(goals.findOne({ query: { name: save.name } }))
 
-// 目标唯一性？？？？
-  // [err, result] = await To(goals.findOne({ query: { name: save.name } }))
-
-  // if (err) {
-  //   throw CreateError({
-  //     message: '查询异常',
-  //     data: { errorInfo: err.message }
-  //   });
-  // }
+  if (err) {
+    throw CreateError({
+      message: '查询异常',
+      data: { errorInfo: err.message }
+    });
+  }
 
   // if (result) {
   //   throw CreateError({
@@ -159,32 +151,15 @@ mutation.addGoals = async (root, args, context, schema) => {
   //   });
   // }
 
+ 
 
-
-  
+  save.user_id = user._id + '';
   // if (!save.avatar) delete save.avatar
   // if (!save.parent_id) delete save.parent_id;
 
   // console.log(save);
 
-    // title
-    save.name = xss(save.name, {
-      whiteList: {},
-      stripIgnoreTag: true,
-      onTagAttr: (tag, name, value, isWhiteAttr) => ''
-    })
-
-    if (!save.name || save.name.replace(/(^\s*)|(\s*$)/g, "") == '') {
-      throw CreateError({ message: '目标名称不能为空' });
-    } else if (save.name.length > 120) {
-      throw CreateError({ message: '目标名称不能大于120个字符' });
-    }
-
-
-    // 增加其他参数
-    save.user_id = user._id;
-
-  [err, result] = await To(Goals.save({ data: save }))
+  [ err, result ] = await To(Goals.save({ data: save }))
 
   if (err) {
     throw CreateError({
@@ -201,8 +176,8 @@ mutation.updateGoals = async (root, args, context, schema) => {
   const { user, role } = context;
   let err, query, update, topic, result;
 
-  [err, query] = getUpdateQuery({ args, model: 'goals', role });
-  [err, update] = getUpdateContent({ args, model: 'goals', role });
+  [ err, query ] = getUpdateQuery({ args, model: 'goals', role });
+  [ err, update ] = getUpdateContent({ args, model: 'goals', role });
 
   // if (!user || role != 'admin') {
   //   throw CreateError({
@@ -213,7 +188,7 @@ mutation.updateGoals = async (root, args, context, schema) => {
 
   // --------------------------------------
 
-  [err, topic] = await To(Goals.findOne({ query: { _id: query._id } }))
+  [ err, topic ] = await To(Goals.findOne({ query: { _id: query._id } }))
 
   if (err) {
     throw CreateError({
@@ -232,7 +207,7 @@ mutation.updateGoals = async (root, args, context, schema) => {
   // 判断是否存在这个话题
   if (topic.name != update.name) {
 
-    [err, result] = await To(Goals.findOne({ query: { name: update.name } }))
+    [ err, result ] = await To(Goals.findOne({ query: { name: update.name } }))
 
     if (err) {
       throw CreateError({
@@ -254,7 +229,7 @@ mutation.updateGoals = async (root, args, context, schema) => {
 
 
 
-  [err] = await To(Goals.update({ query, update }))
+  [ err ] = await To(Goals.update({ query, update }))
 
   if (err) {
     throw CreateError({

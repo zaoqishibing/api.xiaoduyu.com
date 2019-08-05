@@ -13,11 +13,13 @@ const GoalsSchema = new Schema({
   // 时长或者数量
   time_number: { type: String, default: '' },
   // 每周打卡天数设置
-  days_of_perweek: { type: Array, default: [1,2,3,4,5] },
+  days_of_perweek: { type: String, default: "1,2,3,4,5" },
   // 目标天数
   days_of_number: { type: Number, default: 7 },
   // 目标截止日期
-  deadline: { type: Date, default: Date.now },
+  endtime: { type: Date, default: Date.now },
+  // 目标start日期
+  starttime: { type: Date, default: Date.now },
   // 图片要求 0-不要求 1-现场拍照 2-上传截图
   picture_of_punch: { type: Number, default: 0 },
   // 图片包含的目标物体
