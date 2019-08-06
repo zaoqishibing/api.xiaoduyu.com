@@ -33,3 +33,5 @@ config/index_*.js
 package-lock.json
 docs
 Makefile
+.idea/
+
