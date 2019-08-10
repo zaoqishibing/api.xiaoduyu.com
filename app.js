@@ -15,6 +15,7 @@ var config = require('./config');
 // var API_V1 = require('./app/api-v1');
 var graphql = require('./app/graphql');
 
+var schedule = require('./app/schedule');
 
 import OauthRouter from './app/oauth'
 import outputError from './config/error'
