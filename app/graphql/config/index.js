@@ -49,6 +49,7 @@ let s = {
    */
   getQuery: ({ args = {}, model, role = '' }) => {
 
+    // 解析参数
     let { filters, options } = list[model].query;
 
     let query = {}, err;

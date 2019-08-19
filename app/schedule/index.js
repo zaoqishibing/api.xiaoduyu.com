@@ -5,6 +5,6 @@ const calculateData = function () {
 };
 
 // cron-style
-schedule.scheduleJob('*/5 * * * * *', calculateData);
+// schedule.scheduleJob('*/5 * * * * *', calculateData);
 
 exports.schedule = schedule;

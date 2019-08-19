@@ -28,9 +28,11 @@ query.posts = async (root, args, context, schema) => {
   // 每页数量
   let limit = options.limit;
 
-  // select
+  // select，这里取得本次请求要返回的字段
   schema.fieldNodes[0].selectionSet.selections.map(item=>select[item.name.value] = 1)
 
+
+  // 联查条件
   if (!options.populate) options.populate = []
 
   // 增加屏蔽条件
@@ -38,11 +40,14 @@ query.posts = async (root, args, context, schema) => {
   // 2、如果通过posts id查询，那么不增加屏蔽条件
 
   if (user) {
-
+    // 如果没有指定post的id，并且用户有屏蔽帖子，则设置id不在屏蔽帖子之内
     if (!query._id && user.block_posts_count > 0) {
+      // mongose中 $nin 不在多个值范围内
       query._id = { '$nin': user.block_posts }
     }
 
+    // 这里的user.block_people_count 是客户端带着token，每次请求中间件（graphql/index.js），查询了user信息赋值给user对象的
+    // 屏蔽指定的用户
     if (!query.user_id && user.block_people_count > 0) {
       query.user_id = { '$nin': user.block_people }
     }
@@ -50,16 +55,16 @@ query.posts = async (root, args, context, schema) => {
   }
 
 
-  // 用户关注
+  // 用户关注,1、被关注用户的帖子 2、被关注话题的帖子 3、被直接关注的帖子
   if (user && method == 'user_follow') {
-
+    //  $or　　　　或关系
     let newQuery = { '$or': [] }
-
+    // 删除指定
     if (query.user_id) delete query.user_id;
     if (query.topic_id) delete query.topic_id;
     if (query.posts_id) delete query.posts_id;
     if (query._id) delete query._id;
-
+    // 先查询用户自己的id？？
     newQuery['$or'].push(Object.assign({}, query, {
       user_id: user._id,
       deleted: false
@@ -102,6 +107,7 @@ query.posts = async (root, args, context, schema) => {
     query = newQuery;
   }
 
+  // 联查帖子作者的相关信息
   if (select.user_id) {
     options.populate.push({
       path: 'user_id',
@@ -109,15 +115,18 @@ query.posts = async (root, args, context, schema) => {
     })
   }
 
+   // 联查帖子的评论
   if (select.comment) {
     options.populate.push({
       path: 'comment',
+      // 附加查询条件
       match: {
         $or: [
           { deleted: false, weaken: false, like_count: { $gte: 2 } },
           { deleted: false, weaken: false, reply_count: { $gte: 1 } }
         ]
       },
+      // 设置返回字段
       select: {
         '_id': 1, 'content_html': 1, 'create_at': 1, 'reply_count': 1,
         'like_count': 1, 'user_id': 1, 'posts_id': 1
@@ -126,6 +135,7 @@ query.posts = async (root, args, context, schema) => {
     })
   }
 
+  // 联查帖子的话题
   if (select.topic_id) {
     options.populate.push({
       path: 'topic_id',
@@ -133,9 +143,11 @@ query.posts = async (root, args, context, schema) => {
     })
   }
 
+  // 如果是user_follow模式，但是用户什么也没关注
   if (query['$or'] && query['$or'].length == 0) {
     postList = [];
   } else {
+    // 否则进行查询，postList 设置为默认为空数组
     [ err, postList = [] ] = await To(Posts.find({ query, select, options }));
   }
 
@@ -146,6 +158,8 @@ query.posts = async (root, args, context, schema) => {
     })
   }
 
+
+  // 如果列表存在且要求返回评论，则联查评论人信息
   if (select.comment && postList.length > 0) {
 
     options = [
@@ -168,10 +182,10 @@ query.posts = async (root, args, context, schema) => {
   }
 
 
-  // 如果未登陆，直接返回
+  // 如果未登陆，或者已经登录但是列表为空，直接返回
   if (!user || postList.length == 0) return postList;
 
-  // find follow status
+  // find follow status，如果用户关注了该帖子，则item.follow为true
   ids = [];
 
   postList.map(item=>ids.push(item._id));
@@ -188,7 +202,7 @@ query.posts = async (root, args, context, schema) => {
   postList.map(item => item.follow = ids[item._id] ? true : false);
 
 
-  // find like status
+  // find like status，如果用户喜欢了该帖子，则item.like为true
   ids = [];
 
   postList.map(item=>ids.push(item._id));
@@ -203,8 +217,7 @@ query.posts = async (root, args, context, schema) => {
   likeList.map(item=>ids[item.target_id] = 1);
   postList.map(item => item.like = ids[item._id] ? true : false);
 
-  // 更新最近查询关注的帖子
-
+  // 更新最近查询关注的帖子？？？
   if (user && method == 'user_follow' && limit != 1) {
 
     await User.update({
@@ -490,8 +503,9 @@ mutation.addPosts = async (root, args, context, schema) => {
     })
   }
 
-  // result.create_at = new Date(result.create_at).getTime();
-  // global.io.sockets.emit('new-posts', result.create_at - 1);
+  // 触发新posts事件，通知客户端主动拉取
+  result.create_at = new Date(result.create_at).getTime();
+  global.io.sockets.emit('new-posts', result.create_at - 1);
 
   return {
     success: true,
