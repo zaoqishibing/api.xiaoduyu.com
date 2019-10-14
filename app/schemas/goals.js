@@ -28,8 +28,8 @@ const GoalsSchema = new Schema({
   current_days_count: { type: Number, default: 0 },
   // 押金金额
   money: { type: Number, default: 1 },
-  // 是否完成
-  completed:{type: Boolean, default: false},
+  // 状态 0-正在进行 1-失败 2-成功  3-未开始
+  status:{type: Boolean, default: 0},
   // 排序
   sort: { type: Number, default: 0 },
   // 创建日期

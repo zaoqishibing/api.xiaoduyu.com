@@ -5,7 +5,7 @@ import jpush from '../../common/jpush';
 import To from '../../common/to';
 import CreateError from './errors';
 
-let [ query, mutation, resolvers ] = [{},{},{}];
+let [query, mutation, resolvers] = [{}, {}, {}];
 
 import { getQuery, getOption, getUpdateQuery, getUpdateContent, getSaveFields } from '../config';
 
@@ -16,8 +16,8 @@ query.comments = async (root, args, context, schema) => {
   let select = {}, query, options, err, commentList = [], likeList = [];
   // let { query, options } = Querys({ args, model: 'comment', role })
 
-  [ err, query ] = getQuery({ args, model: 'comment', role });
-  [ err, options ] = getOption({ args, model: 'comment', role });
+  [err, query] = getQuery({ args, model: 'comment', role });
+  [err, options] = getOption({ args, model: 'comment', role });
 
   // 未登陆用户，不能使用method方式查询
   if (!user && method) {
@@ -25,7 +25,7 @@ query.comments = async (root, args, context, schema) => {
   }
 
   // select
-  schema.fieldNodes[0].selectionSet.selections.map(item=>select[item.name.value] = 1)
+  schema.fieldNodes[0].selectionSet.selections.map(item => select[item.name.value] = 1)
 
   //===
 
@@ -123,19 +123,19 @@ query.comments = async (root, args, context, schema) => {
 
   if (Reflect.has(select, 'user_id') && select.user_id) {
     options.populate.push([
-      { path: 'user_id', select:{ '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 } }
+      { path: 'user_id', select: { '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 } }
     ])
   }
 
   if (Reflect.has(select, 'reply_id') && select.reply_id) {
     options.populate.push([
-      { path: 'reply_id', select:{ 'user_id': 1, '_id': 0 } }
+      { path: 'reply_id', select: { 'user_id': 1, '_id': 0 } }
     ])
   }
 
   if (Reflect.has(select, 'posts_id') && select.posts_id) {
     options.populate.push([
-      { path: 'posts_id', select: { _id:1, title:1, content_html:1 } }
+      { path: 'posts_id', select: { _id: 1, title: 1, content_html: 1 } }
     ])
   }
 
@@ -150,7 +150,7 @@ query.comments = async (root, args, context, schema) => {
 
   // console.log(query);
 
-  [ err, commentList ] = await To(Comment.find({ query, select, options }));
+  [err, commentList] = await To(Comment.find({ query, select, options }));
 
   if (err || !commentList) {
     throw CreateError({
@@ -165,12 +165,12 @@ query.comments = async (root, args, context, schema) => {
     options.push({
       path: 'reply.user_id',
       model: 'User',
-      select:{ '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 }
+      select: { '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 }
     })
     options.push({
       path: 'reply.reply_id',
       model: 'Comment',
-      select:{ '_id': 1, 'user_id': 1, 'content_html':1 }
+      select: { '_id': 1, 'user_id': 1, 'content_html': 1 }
     })
   }
 
@@ -178,12 +178,12 @@ query.comments = async (root, args, context, schema) => {
     options.push({
       path: 'reply_id.user_id',
       model: 'User',
-      select:{ '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 }
+      select: { '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 }
     })
   }
 
   if (options.length > 0) {
-    [ err, commentList ] = await To(Comment.populate({ collections: commentList, options }))
+    [err, commentList] = await To(Comment.populate({ collections: commentList, options }))
   }
 
   options = [];
@@ -192,12 +192,12 @@ query.comments = async (root, args, context, schema) => {
     options.push({
       path: 'reply.reply_id.user_id',
       model: 'User',
-      select:{ '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 }
+      select: { '_id': 1, 'nickname': 1, 'create_at': 1, 'avatar': 1 }
     })
   }
 
   if (options.length > 0) {
-    [ err, commentList ] = await To(Comment.populate({ collections: commentList, options }))
+    [err, commentList] = await To(Comment.populate({ collections: commentList, options }))
   }
 
   if (err) {
@@ -219,12 +219,12 @@ query.comments = async (root, args, context, schema) => {
 
   var ids = [];
 
-  commentList.map(function(item){
+  commentList.map(function (item) {
     ids.push(item._id)
     if (item.reply) item.reply.map(item => ids.push(item._id))
   });
 
-  [ err, likeList ] = await To(Like.find({
+  [err, likeList] = await To(Like.find({
     query: {
       $or: [
         {
@@ -246,11 +246,11 @@ query.comments = async (root, args, context, schema) => {
 
   ids = {}
 
-  likeList.map(function(item){
+  likeList.map(function (item) {
     ids[item.target_id] = 1
   });
 
-  commentList.map(function(item){
+  commentList = commentList.map(function (item) {
     if (ids[item._id]) {
       item.like = true
     } else {
@@ -258,7 +258,7 @@ query.comments = async (root, args, context, schema) => {
     }
 
     if (item.reply) {
-      item.reply.map(function(item){
+      item.reply.map(function (item) {
         if (ids[item._id]) {
           item.like = true
         } else {
@@ -266,11 +266,10 @@ query.comments = async (root, args, context, schema) => {
         }
       })
     }
-
     return item;
   });
 
-  // console.log(commentList);
+  console.log(commentList);
 
   return commentList
 }
@@ -281,7 +280,7 @@ query.countComments = async (root, args, context, schema) => {
   const { user, role } = context;
   let err, query, count;
 
-  [ err, query ] = getQuery({ args, model: 'comment', role });
+  [err, query] = getQuery({ args, model: 'comment', role });
 
   if (user) {
 
@@ -295,7 +294,7 @@ query.countComments = async (root, args, context, schema) => {
 
   }
 
-  [ err, count ] = await To(Comment.count({ query }));
+  [err, count] = await To(Comment.count({ query }));
 
   if (err) {
     throw CreateError({
@@ -316,13 +315,13 @@ mutation.updateComment = async (root, args, context, schema) => {
 
   let err, query, update, result;
 
-  [ err, query ] = getUpdateQuery({ args, model: 'comment', role });
+  [err, query] = getUpdateQuery({ args, model: 'comment', role });
   if (err) throw CreateError({ message: err });
 
-  [ err, update ] = getUpdateContent({ args, model: 'comment', role });
+  [err, update] = getUpdateContent({ args, model: 'comment', role });
   if (err) throw CreateError({ message: err });
 
-  [ err, result ] = await To(Comment.findOne({ query }));
+  [err, result] = await To(Comment.findOne({ query }));
 
   if (err || !result) {
     throw CreateError({ message: '评论不存在' });
@@ -335,7 +334,7 @@ mutation.updateComment = async (root, args, context, schema) => {
     }
   }
 
-  [ err, result ] = await To(Comment.update({ query, update }));
+  [err, result] = await To(Comment.update({ query, update }));
 
   if (err) {
     throw CreateError({
@@ -349,7 +348,7 @@ mutation.updateComment = async (root, args, context, schema) => {
 
     console.log('===');
 
-    [ err ] = await To(Feed.update({
+    [err] = await To(Feed.update({
       query: { comment_id: query._id },
       update: { deleted: update.deleted }
     }));
@@ -371,18 +370,18 @@ mutation.updateComment = async (root, args, context, schema) => {
 
 mutation.addComment = async (root, args, context, schema) => {
 
-  const { user, role, ip  } = context;
+  const { user, role, ip } = context;
   let err, // 错误
-      result, // 结果
-      fields,
-      posts,
-      comment,
-      parentComment,
-      reply; // 字段
+    result, // 结果
+    fields,
+    posts,
+    comment,
+    parentComment,
+    reply; // 字段
 
   if (!user) throw CreateError({ message: '请求被拒绝' });
 
-  [ err, fields ] = getSaveFields({ args, model:'comment', role });
+  [err, fields] = getSaveFields({ args, model: 'comment', role });
 
   if (err) throw CreateError({ message: err });
 
@@ -420,7 +419,7 @@ mutation.addComment = async (root, args, context, schema) => {
 
   let _content_html = content_html || '';
 
-  _content_html = _content_html.replace(/<[^>]+>/g,"");
+  _content_html = _content_html.replace(/<[^>]+>/g, "");
   _content_html = _content_html.replace(/(^\s*)|(\s*$)/g, "");
 
   if (!content_html || !_content_html) {
@@ -431,7 +430,7 @@ mutation.addComment = async (root, args, context, schema) => {
 
   // posts_id
   if (posts_id) {
-    [ err, posts ] = await To(Posts.findOne({
+    [err, posts] = await To(Posts.findOne({
       query: { _id: posts_id }
     }));
 
@@ -450,7 +449,7 @@ mutation.addComment = async (root, args, context, schema) => {
   // parent_id
   if (parent_id) {
 
-    [ err, parentComment ] = await To(Comment.findOne({
+    [err, parentComment] = await To(Comment.findOne({
       query: { _id: parent_id }
     }));
 
@@ -475,7 +474,7 @@ mutation.addComment = async (root, args, context, schema) => {
 
   // reply_id
   if (reply_id) {
-    [ err, reply ] = await To(Comment.findOne({
+    [err, reply] = await To(Comment.findOne({
       query: { _id: reply_id }
     }));
 
@@ -525,8 +524,8 @@ mutation.addComment = async (root, args, context, schema) => {
   });
 
   let _contentHTML = content_html
-  _contentHTML = _contentHTML.replace(/<img[^>]+>/g,"1")
-  _contentHTML = _contentHTML.replace(/<[^>]+>/g,"")
+  _contentHTML = _contentHTML.replace(/<img[^>]+>/g, "1")
+  _contentHTML = _contentHTML.replace(/<[^>]+>/g, "")
 
   if (!content || !content_html || _contentHTML == '') {
     throw CreateError({
@@ -550,7 +549,7 @@ mutation.addComment = async (root, args, context, schema) => {
   // 评论的回复的回复
   if (parent_id && reply_id) data.reply_id = reply_id;
 
-  [ err, result ] = await To(Comment.save({ data }));
+  [err, result] = await To(Comment.save({ data }));
 
   if (err) {
     throw CreateError({
@@ -622,12 +621,12 @@ mutation.addComment = async (root, args, context, schema) => {
       }));
 
 
-    try {
-      // 极光推送
-      jpush.pushReplyToUser({ comment: parentComment, reply: result, user });
-    } catch (err) {
-      console.log(err);
-    }
+      try {
+        // 极光推送
+        jpush.pushReplyToUser({ comment: parentComment, reply: result, user });
+      } catch (err) {
+        console.log(err);
+      }
 
 
 
@@ -644,13 +643,13 @@ mutation.addComment = async (root, args, context, schema) => {
 
 function Countdown(nowDate, endDate) {
 
-  var lastDate = Math.ceil(new Date(endDate).getTime()/1000)
-  var now = Math.ceil(new Date(nowDate).getTime()/1000)
+  var lastDate = Math.ceil(new Date(endDate).getTime() / 1000)
+  var now = Math.ceil(new Date(nowDate).getTime() / 1000)
   var timeCount = lastDate - now
-  var days = parseInt( timeCount / (3600*24) )
-  var hours = parseInt( (timeCount - (3600*24*days)) / 3600 )
-  var mintues = parseInt( (timeCount - (3600*24*days) - (hours*3600)) / 60)
-  var seconds = timeCount - (3600*24*days) - (3600*hours) - (60*mintues)
+  var days = parseInt(timeCount / (3600 * 24))
+  var hours = parseInt((timeCount - (3600 * 24 * days)) / 3600)
+  var mintues = parseInt((timeCount - (3600 * 24 * days) - (hours * 3600)) / 60)
+  var seconds = timeCount - (3600 * 24 * days) - (3600 * hours) - (60 * mintues)
 
   return {
     days: days,
@@ -669,7 +668,7 @@ exports.resolvers = resolvers;
 // 更新帖子的评论数量，以及评论id
 async function updatePostsCommentCount(posts_id) {
 
-  let [ err, result ] = await To(Comment.find({
+  let [err, result] = await To(Comment.find({
     query: {
       posts_id,
       parent_id: { $exists: false },
@@ -679,7 +678,7 @@ async function updatePostsCommentCount(posts_id) {
   }));
 
   var ids = [];
-  result.map(item =>{ ids.push(item._id) });
+  result.map(item => { ids.push(item._id) });
 
   // 更新评论通知
   let update = {
@@ -699,7 +698,7 @@ async function updatePostsCommentCount(posts_id) {
 // 更新帖子的评论数量，以及评论id
 async function updateUserCommentCount(user_id) {
 
-  let [ err, total ] = await To(Comment.count({
+  let [err, total] = await To(Comment.count({
     query: { user_id: user_id, deleted: false, parent_id: { $exists: false } }
   }));
 
@@ -714,7 +713,7 @@ async function updateUserCommentCount(user_id) {
 // 更新帖子的评论数量，以及评论id
 async function updateCommentReplyCount(comment_id, posts_id) {
 
-  let [ err, result ] = await To(Comment.find({
+  let [err, result] = await To(Comment.find({
     query: {
       posts_id,
       parent_id: comment_id,
@@ -724,7 +723,7 @@ async function updateCommentReplyCount(comment_id, posts_id) {
   }));
 
   var ids = [];
-  result.map(item =>{ ids.push(item._id) });
+  result.map(item => { ids.push(item._id) });
 
   // 更新评论通知
   let update = {

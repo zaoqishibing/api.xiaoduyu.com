@@ -16,11 +16,17 @@ const query = {
       type: 'ID',
       desc:'用户ID'
     }),
-    topic_id: data => ({
-      name: 'topic_id',
+    // topic_id: data => ({
+    //   name: 'topic_id',
+    //   value: ParseParams.id(data),
+    //   type: 'ID',
+    //   desc:'话题ID'
+    // }),
+    goal_id: data => ({
+      name: 'goal_id',
       value: ParseParams.id(data),
       type: 'ID',
-      desc:'话题ID'
+      desc:'目标ID'
     }),
     title: data => ({
       name: 'title',
@@ -112,11 +118,11 @@ const save = {
     type: 'String!',
     desc:'文本HTML'
   }),
-  topic_id: data => ({
-    name: 'topic_id',
+  goal_id: data => ({
+    name: 'goal_id',
     value: data,
     type: 'ID!',
-    desc:'话题'
+    desc:'目标'
   }),
   device_id: data => ({
     name: 'device_id',
@@ -159,11 +165,11 @@ const update = {
       type: 'Boolean',
       desc:'削弱'
     }),
-    topic_id: data => ({
-      name: 'topic_id',
+    goal_id: data => ({
+      name: 'goal_id',
       value: data,
       type: 'ID',
-      desc:'话题ID'
+      desc:'目标ID'
     }),
     type: data => ({
       name: 'type',

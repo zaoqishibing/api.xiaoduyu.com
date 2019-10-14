@@ -11,10 +11,9 @@ exports.Schema = `
     avatar_url: String
   }
 
-  type _Topic {
+  type _Goal {
     _id: String
     name: String
-    avatar: String
   }
 
   type _Comment {
@@ -34,7 +33,7 @@ exports.Schema = `
     # 作者
     user_id: _User
     # 话题
-    topic_id: _Topic
+    goal_id: _Goal
     # 类型
     type: String
     # 标题

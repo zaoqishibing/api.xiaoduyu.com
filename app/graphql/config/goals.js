@@ -58,10 +58,10 @@ const query = {
       name: 'create_at', value: { '$lte': data },
       type: 'String', desc:'结束日期'
     }),
-    // method: data => ({
-    //   name: '', value: '',
-    //   type: 'String', desc: '模式(user_follow)'
-    // })
+    method: data => ({
+      name: '', value: '',
+      type: 'String', desc: '模式(admin,all,today,tomorrow)'
+    })
   },
   // 排序，page size，page number
   options: {

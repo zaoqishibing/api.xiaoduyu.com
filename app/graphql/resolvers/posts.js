@@ -1,4 +1,4 @@
-import { Posts, User, Follow, Like, Topic, Feed } from '../../modelsa';
+import { Posts, User, Follow, Like, Goal, Feed } from '../../modelsa';
 
 import CreateError from './errors';
 import To from '../../common/to';
@@ -61,7 +61,7 @@ query.posts = async (root, args, context, schema) => {
     let newQuery = { '$or': [] }
     // 删除指定
     if (query.user_id) delete query.user_id;
-    if (query.topic_id) delete query.topic_id;
+    if (query.goal_id) delete query.goal_id;
     if (query.posts_id) delete query.posts_id;
     if (query._id) delete query._id;
     // 先查询用户自己的id？？
@@ -83,10 +83,10 @@ query.posts = async (root, args, context, schema) => {
       }, {}))
     }
 
-    // 话题
-    if (user.follow_topic.length > 0) {
+    // 目标
+    if (user.follow_goal.length > 0) {
       newQuery['$or'].push(Object.assign({}, query, {
-        topic_id: {'$in': user.follow_topic },
+        goal_id: {'$in': user.follow_goal },
         deleted: false,
         weaken: false
       }, {}))
@@ -135,11 +135,11 @@ query.posts = async (root, args, context, schema) => {
     })
   }
 
-  // 联查帖子的话题
-  if (select.topic_id) {
+  // 联查帖子的目标
+  if (select.goal_id) {
     options.populate.push({
-      path: 'topic_id',
-      select: { '_id': 1, 'name': 1, 'avatar':1 }
+      path: 'goal_id',
+      select: { '_id': 1, 'name': 1 }
     })
   }
 
@@ -281,7 +281,7 @@ query.countPosts = async (root, args, context, schema) => {
     let newQuery = { '$or': [] }
 
     if (query.user_id) delete query.user_id;
-    if (query.topic_id) delete query.topic_id;
+    if (query.goal_id) delete query.goal_id;
     if (query.posts_id) delete query.posts_id;
     if (query._id) delete query._id;
 
@@ -303,9 +303,9 @@ query.countPosts = async (root, args, context, schema) => {
     }
 
     // 话题
-    if (user.follow_topic.length > 0) {
+    if (user.follow_goal.length > 0) {
       newQuery['$or'].push(Object.assign({}, query, {
-        topic_id: {'$in': user.follow_topic },
+        goal_id: {'$in': user.follow_goal },
         deleted: false,
         weaken: false
       }, {}))
@@ -373,10 +373,28 @@ mutation.addPosts = async (root, args, context, schema) => {
   if (err) throw CreateError({ message: err });
 
   // 开始逻辑
-  let { title, content, content_html, topic_id, device_id = 1, type = 1 } = fields;
+  let { title, content, content_html, goal_id, device_id = 1, type = 1 } = fields;
 
   if (!ip) throw CreateError({ message: '无效的ip' });
   if (type > 1) throw CreateError({ message: 'type 无效' });
+
+    // goal判断
+    [ err, result ] = await To(Goal.findOne({
+      query: { _id: goal_id }
+    }));
+  
+    if (err) {
+      throw CreateError({
+        message: '查询失败',
+        data: { errorInfo: err.message }
+      })
+    }
+  
+    if (!result) {
+      throw CreateError({
+        message: 'goal_id 不存在'
+      })
+    }
 
   // 判断是否禁言
   if (user && user.banned_to_post &&
@@ -384,7 +402,7 @@ mutation.addPosts = async (root, args, context, schema) => {
   ) {
     let countdown = Countdown(new Date(), user.banned_to_post);
     throw CreateError({
-      message: '您被禁言，{days}天{hours}小时{mintues}分钟后解除禁言',
+      message: '您被限制功能，{days}天{hours}小时{mintues}分钟后解除',
       data: { error_data: countdown }
     });
   }
@@ -452,23 +470,7 @@ mutation.addPosts = async (root, args, context, schema) => {
     }
   });
 
-  // topic
-  [ err, result ] = await To(Topic.findOne({
-    query: { _id: topic_id }
-  }));
 
-  if (err) {
-    throw CreateError({
-      message: '查询失败',
-      data: { errorInfo: err.message }
-    })
-  }
-
-  if (!result) {
-    throw CreateError({
-      message: 'topic_id 不存在'
-    })
-  }
 
   // 储存
   [ err, result ] = await To(Posts.save({
@@ -477,7 +479,7 @@ mutation.addPosts = async (root, args, context, schema) => {
       title,
       content,
       content_html,
-      topic_id,
+      goal_id,
       ip,
       device: device_id,
       type,
@@ -486,9 +488,9 @@ mutation.addPosts = async (root, args, context, schema) => {
   }));
 
   // 更新
-  await To(Topic.update({
-    query: { _id: topic_id },
-    update: { $inc: { 'posts_count': 1 } }
+  await To(Goal.update({
+    query: { _id: goal_id },
+    update: { $inc: { 'current_days_count': 1 } }
   }));
 
   await To(User.update({
