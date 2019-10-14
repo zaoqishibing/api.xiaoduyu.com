@@ -20,6 +20,7 @@ exports.Schema = `
     like_count: Int
     follow_people_count: Int
     follow_topic_count: Int
+    follow_goal_count: Int
     follow_posts_count: Int
     block_people_count: Int
     block_posts_count: Int
@@ -48,6 +49,7 @@ exports.Schema = `
     like_count: Int
     follow_people_count: Int
     follow_topic_count: Int
+    follow_goal_count: Int
     follow_posts_count: Int
     block_people_count: Int
     block_posts_count: Int
