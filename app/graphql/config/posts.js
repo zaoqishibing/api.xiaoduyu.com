@@ -16,12 +16,12 @@ const query = {
       type: 'ID',
       desc:'用户ID'
     }),
-    // topic_id: data => ({
-    //   name: 'topic_id',
-    //   value: ParseParams.id(data),
-    //   type: 'ID',
-    //   desc:'话题ID'
-    // }),
+    topic_id: data => ({
+      name: 'topic_id',
+      value: ParseParams.id(data),
+      type: 'ID',
+      desc:'话题ID'
+    }),
     goal_id: data => ({
       name: 'goal_id',
       value: ParseParams.id(data),

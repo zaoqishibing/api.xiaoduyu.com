@@ -61,6 +61,7 @@ query.posts = async (root, args, context, schema) => {
     let newQuery = { '$or': [] }
     // 删除指定
     if (query.user_id) delete query.user_id;
+    if (query.topic_id) delete query.topic_id;
     if (query.goal_id) delete query.goal_id;
     if (query.posts_id) delete query.posts_id;
     if (query._id) delete query._id;
